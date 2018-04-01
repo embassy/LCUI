@@ -357,7 +357,7 @@ static void X11Surface_Present( LCUI_Surface surface )
 {
 	LinkedListNode *node;
 	LCUIMutex_Lock( &surface->mutex );
-	LinkedList_ForEach( node, &surface->rects ) {
+	for (LinkedList_Each( node, &surface->rects )) {
 		LCUI_Rect *rect = node->data;
 		XPutImage( x11.app->display, surface->window,
 			   surface->gc, surface->ximage,
@@ -380,7 +380,7 @@ static void X11Surface_Update( LCUI_Surface surface )
 	}
 }
 
-static int WinDisplay_BindEvent( int event_id, LCUI_EventFunc func, 
+static int X11Display_BindEvent( int event_id, LCUI_EventFunc func, 
 				 void *data, void (*destroy_data)(void*) )
 {
 	return EventTrigger_Bind( x11.trigger, event_id, func, 
@@ -469,7 +469,7 @@ LCUI_DisplayDriver LCUI_CreateLinuxX11DisplayDriver( void )
 	driver->getHandle = X11Surface_GetHandle;
 	driver->beginPaint = X11Surface_BeginPaint;
 	driver->endPaint = X11Surface_EndPaint;
-	driver->bindEvent = WinDisplay_BindEvent;
+	driver->bindEvent = X11Display_BindEvent;
 	LinkedList_Init( &x11.surfaces );
 	LCUI_BindSysEvent( Expose, OnExpose, NULL, NULL );
 	LCUI_BindSysEvent( ConfigureNotify, OnConfigureNotify, NULL, NULL );
